@@ -3,7 +3,7 @@
 use function Livewire\Volt\{state, rules};
 use App\Models\Memo;
 
-state(['title', 'body']);
+state(['title', 'body', 'priority' => 1]);
 
 //バリデーションルールを定義
 rules([
@@ -11,6 +11,7 @@ rules([
     //チェック内容を増やしたいときは|で追加
     'title' => 'required|string|max:50',
     'body' => 'required|string|max:2000',
+    'priority' => 'required|integer|min:1|max:3',
 ]);
 
 //メモを保存する関数
@@ -43,12 +44,25 @@ $store = function () {
         </p>
         <p>
             <label for="body">本文</label>
-                        {{-- タイトルにエラーがあったときエラーメッセージを表示 --}}
+            {{-- 本文にエラーがあったときエラーメッセージを表示 --}}
             @error('body')
                 <span class="error">({{ $message }})</span>
             @enderror
             <br>
             <textarea wire:model="body" id="body"></textarea>
+        </p>
+        <p>
+        <label for="priority">優先度</label>
+            {{-- 優先度にエラーがあったときエラーメッセージを表示 --}}
+            @error('priority')
+                <span class="error">({{ $message }})</span>
+            @enderror
+            <br>
+            <select wire:model="priority" id="priority">
+            <option value="1">低</option>
+            <option value="2">中</option>
+            <option value="3">高</option>
+            </select>
         </p>
         <button type="submit">登録</button>
     </form>
