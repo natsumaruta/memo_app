@@ -1,22 +1,30 @@
 <?php
 
-use function Livewire\Volt\{state};
+use function Livewire\Volt\{state, rules};
 use App\Models\Memo;
 
 state(['title', 'body']);
 
+//バリデーションルールを定義
+rules([
+    //required:
+    //チェック内容を増やしたいときは|で追加
+    'title' => 'required|string|max:50',
+    'body' => 'required|string|max:2000',
+]);
+
 //メモを保存する関数
 $store = function () {
+    //バリデーションチェック
+    $this->validate();
+
     //フォームから入力値をデータベースへ保存
-    Memo::create(
-        $this->all(),
-        //カラム => 入力値
-        // ['title' => $this->title,
-        // 'body' => $this->body,]
-    );
+    Memo::create($this->all());
     return redirect()->route('memos.index');
 };
-
+//カラム => 入力値
+// ['title' => $this->title,
+// 'body' => $this->body,]
 ?>
 
 <div>
@@ -25,11 +33,21 @@ $store = function () {
     <form wire:submit="store">
         <p>
             {{-- for属性とid属性で紐付け 、実際の入力値はwire:model="title" --}}
-            <label for="title">タイトル</label><br>
+            <label for="title">タイトル</label>
+            {{-- タイトルにエラーがあったときエラーメッセージを表示 --}}
+            @error('title')
+                <span class="error">({{ $message }})</span>
+            @enderror
+            <br>
             <input type="text" wire:model="title" id="title">
         </p>
         <p>
-            <label for="body">本文</label><br>
+            <label for="body">本文</label>
+                        {{-- タイトルにエラーがあったときエラーメッセージを表示 --}}
+            @error('body')
+                <span class="error">({{ $message }})</span>
+            @enderror
+            <br>
             <textarea wire:model="body" id="body"></textarea>
         </p>
         <button type="submit">登録</button>
